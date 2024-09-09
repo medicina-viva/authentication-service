@@ -1,0 +1,18 @@
+services:
+  authentication-database:
+    container_name: authentication-database
+    image: mongo
+    restart: always
+    ports:
+      - '27017:27017'
+    volumes:
+      - dbdata:/data/db
+    networks:
+      - authentication-network
+
+volumes:
+  dbdata:
+
+networks:
+  authentication-network:
+    driver: bridge
