@@ -61,7 +61,7 @@ public class UserServiceImpl implements UserService {
                             realmResource.roles().get(role).toRepresentation()
                     );
                     realmResource.users().get(userId).roles().realmLevel().add(roles);
-                    realmResource.users().get(userId).executeActionsEmail(List.of("VERIFY_EMAIL"));
+                    // realmResource.users().get(userId).executeActionsEmail(List.of("VERIFY_EMAIL"));
                 }
                 case 400 -> {
                     String errorMessage = this.readResponseBody(response);
