@@ -16,6 +16,7 @@ import com.medicinaviva.authentication.api.dto.CreateDoctorRequest;
 import com.medicinaviva.authentication.api.dto.Response;
 import com.medicinaviva.authentication.model.exception.BusinessException;
 import com.medicinaviva.authentication.model.exception.ConflictException;
+import com.medicinaviva.authentication.model.exception.UnauthorizedException;
 import com.medicinaviva.authentication.persistence.entity.Doctor;
 import com.medicinaviva.authentication.service.contract.DoctorService;
 
@@ -69,6 +70,8 @@ public class DoctorController {
                         .build();
             } catch (BusinessException ex) {
                 response = Response.builder().code(HttpStatus.BAD_REQUEST.value()).message(ex.getMessage()).build();
+            }catch (UnauthorizedException ex) {
+                response = Response.builder().code(HttpStatus.UNAUTHORIZED.value()).message(ex.getMessage()).build();
             } catch (ConflictException ex) {
                 response = Response.builder().code(HttpStatus.CONFLICT.value()).message(ex.getMessage()).build();
             } catch (Exception ex) {
