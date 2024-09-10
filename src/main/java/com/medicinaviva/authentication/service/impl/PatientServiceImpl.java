@@ -25,10 +25,8 @@ public class PatientServiceImpl implements PatientService {
     @Override
     public Patient create(Patient patient) throws BusinessException, ConflictException, UnexpectedException {
         boolean enabled = true;
-        UserRepresentation user = FuncUltils
-                .userRepFactory(patient.getUser(), enabled);
+        UserRepresentation user = FuncUltils.userRepFactory(patient.getUser(), enabled);
         this.userService.create(user, RolesEnum.PATIENT.getValue());
-        
         patient.setActive(enabled);
         patient.getUser().setPassword(null);
         return this.patientRepository.save(patient);

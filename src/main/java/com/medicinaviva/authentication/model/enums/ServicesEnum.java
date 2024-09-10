@@ -5,8 +5,7 @@ import lombok.Getter;
 
 @Getter
 @AllArgsConstructor
-public enum RolesEnum {
-    PATIENT("PATIENT"),
-    DOCTOR("DOCTOR");
+public enum ServicesEnum {
+    CONSULATION_SERVICE("http://consultation-service");
     private String value;
 }

@@ -1,6 +1,9 @@
 package com.medicinaviva.authentication.utils;
 
+import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 import org.keycloak.representations.idm.CredentialRepresentation;
 import org.keycloak.representations.idm.UserRepresentation;
@@ -23,5 +26,10 @@ public class FuncUltils {
         credentials.setTemporary(false);
         userRep.setCredentials(List.of(credentials));
         return userRep;
+    }
+
+    public static List<Long> removeDuplication(List<Long> longs){
+        Set<Long> set = new HashSet<>(longs);
+        return new ArrayList<>(set);
     }
 }

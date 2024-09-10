@@ -12,12 +12,12 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.medicinaviva.authentication.api.dto.CreatePatientRequest;
+import com.medicinaviva.authentication.api.dto.CreateDoctorRequest;
 import com.medicinaviva.authentication.api.dto.Response;
 import com.medicinaviva.authentication.model.exception.BusinessException;
 import com.medicinaviva.authentication.model.exception.ConflictException;
-import com.medicinaviva.authentication.persistence.entity.Patient;
-import com.medicinaviva.authentication.service.contract.PatientService;
+import com.medicinaviva.authentication.persistence.entity.Doctor;
+import com.medicinaviva.authentication.service.contract.DoctorService;
 
 import io.github.resilience4j.circuitbreaker.annotation.CircuitBreaker;
 import io.github.resilience4j.retry.annotation.Retry;
@@ -29,40 +29,39 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 
 @RestController
-@Tag(name = "Patients")
-@RequestMapping("/patients")
+@Tag(name = "Doctors")
+@RequestMapping("/doctors")
 @RequiredArgsConstructor
-public class PatientController {
+public class DoctorController {
 
-    private final PatientService service;
+    private final DoctorService service;
     private final ModelMapper mapper;
 
     // RESILIENCE 4J
     @Retry(name = "breaker")
     @TimeLimiter(name = "breaker")
-    @CircuitBreaker(name = "breaker", fallbackMethod = "createPatientFallbackMethod")
-
+    @CircuitBreaker(name = "breaker", fallbackMethod = "createDoctorFallbackMethod")
+    
     @PostMapping("/register")
-    @Operation(summary = "Register for Patients")
+    @Operation(summary = "Register for Doctor")
     @ResponseStatus(HttpStatus.CREATED)
     @ApiResponses(value = {
-        @ApiResponse(responseCode = "201", description = "Returns successful message."),
-        @ApiResponse(responseCode = "400", description = "Bad request happened."),
-        @ApiResponse(responseCode = "409", description = "Conflict."),
-        @ApiResponse(responseCode = "500", description = "An unexpected error occurred."),})
-    public CompletableFuture<ResponseEntity<Response>> create(@RequestBody CreatePatientRequest request) {
+            @ApiResponse(responseCode = "201", description = "Returns successful message."),
+            @ApiResponse(responseCode = "400", description = "Bad request happened."),
+            @ApiResponse(responseCode = "409", description = "Conflict."),
+            @ApiResponse(responseCode = "500", description = "An unexpected error occurred."), })
+    public CompletableFuture<ResponseEntity<Response>> create(@RequestBody CreateDoctorRequest request) {
         return CompletableFuture.supplyAsync(() -> {
             Response response;
-            String error = CommonsControllerValidators
-                    .createUserValidator(request.getUser(), request.getAddress());
+            String error = CommonsControllerValidators.createUserValidator(request.getUser(), request.getAddress());
             if (error != null) {
                 response = Response.builder().code(HttpStatus.BAD_REQUEST.value()).message(error).build();
                 return new ResponseEntity<>(response, HttpStatusCode.valueOf(response.getCode()));
             }
 
             try {
-                Patient patient = this.mapper.map(request, Patient.class);
-                this.service.create(patient);
+                Doctor doctor = this.mapper.map(request, Doctor.class);
+                this.service.create(doctor);
                 response = Response
                         .builder()
                         .code(HttpStatus.CREATED.value())
@@ -80,7 +79,8 @@ public class PatientController {
         });
     }
 
-    public CompletableFuture<ResponseEntity<Response>> createPatientFallbackMethod(CreatePatientRequest request, RuntimeException ex) {
+    public CompletableFuture<ResponseEntity<Response>> createDoctorFallbackMethod(CreateDoctorRequest request,
+            RuntimeException ex) {
         Response response = Response
                 .builder()
                 .code(HttpStatus.SERVICE_UNAVAILABLE.value())
@@ -88,8 +88,7 @@ public class PatientController {
                 .body("We are sorry! Something went wrong, please try after sometime.")
                 .build();
 
-        return CompletableFuture.supplyAsync(()
-                -> new ResponseEntity<>(response, HttpStatusCode.valueOf(response.getCode()))
-        );
+        return CompletableFuture
+                .supplyAsync(() -> new ResponseEntity<>(response, HttpStatusCode.valueOf(response.getCode())));
     }
 }
